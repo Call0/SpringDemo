@@ -1,26 +1,37 @@
 package com.example.springDemo.service.impl;
 
+import com.example.springDemo.client.SearchClient;
 import com.example.springDemo.dto.ProductResponseDTO;
 import com.example.springDemo.dto.SearchRequestDTO;
 import com.example.springDemo.dto.SearchResponseDTO;
 import com.example.springDemo.service.SearchService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SearchServiceImpl implements SearchService {
 
+    @Autowired
+    private SearchClient searchClient;
 
 
     @Override
     public SearchResponseDTO productSearch(SearchRequestDTO request) {
-        List<ProductResponseDTO> products = new ArrayList<>();
+
+        Map<String, Object> products = searchClient.getProducts(request.getSearchTerm());
         SearchResponseDTO p = new SearchResponseDTO();
-        products.add(new ProductResponseDTO(true, 1234, "samsung galaxy s4 blah blah blah", "Samsung Galaxy S4 128b"));
-        products.add(new ProductResponseDTO(true, 134, "samsung galaxy s5 blah blah blah", "Samsung Galaxy S5 64b"));
-        p.setProducts(products);
+        List<ProductResponseDTO> productList = new ArrayList<>();
+
+        ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>)((HashMap<String, Object>)products.get("response")).get("docs");
+        System.out.println(list.size());
+        for(HashMap<String, Object> i : list){
+            productList.add(new ProductResponseDTO((int) i.get("isInStock"), Double.parseDouble(i.get("offerPrice").toString()), i.get("name").toString(), i.get("description").toString()));
+        }
+        System.out.println(productList);
+        p.setProducts(productList);
         return p;
+
     }
 }
