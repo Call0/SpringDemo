@@ -1,24 +1,31 @@
 package com.example.springDemo.dto;
 
 public class ProductResponseDTO {
-    private int inStock;
-    private double salePrice;
+    private boolean inStock;
+    private int salePrice;
     private String description;
     private String title;
 
-    public int getInStock() {
+    public ProductResponseDTO(boolean inStock, int salePrice, String description, String title) {
+        this.inStock = inStock;
+        this.salePrice = salePrice;
+        this.description = description;
+        this.title = title;
+    }
+
+    public boolean isInStock() {
         return inStock;
     }
 
-    public void setInStock(int inStock) {
+    public void setInStock(boolean inStock) {
         this.inStock = inStock;
     }
 
-    public double getSalePrice() {
+    public int getSalePrice() {
         return salePrice;
     }
 
-    public void setSalePrice(double salePrice) {
+    public void setSalePrice(int salePrice) {
         this.salePrice = salePrice;
     }
 
@@ -35,13 +42,6 @@ public class ProductResponseDTO {
     }
 
     public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public ProductResponseDTO(int inStock, double salePrice, String description, String title) {
-        this.inStock = inStock;
-        this.salePrice = salePrice;
-        this.description = description;
         this.title = title;
     }
 }
