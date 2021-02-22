@@ -22,25 +22,25 @@ public class SearchServiceImpl implements SearchService {
     public SearchResponseDTO productSearch(SearchRequestDTO request) {
 
         Map<String, Object> products = searchClient.getProducts(request.getSearchTerm());
-        SearchResponseDTO p = new SearchResponseDTO();
+        SearchResponseDTO response = new SearchResponseDTO();
         List<ProductResponseDTO> productList = new ArrayList<>();
 
         ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>)((HashMap<String, Object>)products.get("response")).get("docs");
         System.out.println(list.size());
-        boolean stock = false;
-        double price = 0;
-        for(HashMap<String, Object> i : list){
-            if((int) i.get(SolarFieldNames.IN_STOCK) > 0){
+        boolean stock;
+        double price;
+        for(HashMap<String, Object> obj : list){
+            if((int) obj.get(SolarFieldNames.IN_STOCK) > 0){
                 stock = true;
             } else{
                 stock = false;
             }
-            price = Double.parseDouble(i.get(SolarFieldNames.OFFER_PRICE).toString());
-            productList.add(new ProductResponseDTO(stock, (int) price, i.get(SolarFieldNames.DESCRIPTION).toString(), i.get(SolarFieldNames.NAME).toString()));
+            price = Double.parseDouble(obj.get(SolarFieldNames.OFFER_PRICE).toString());
+            productList.add(new ProductResponseDTO(stock, (int) price, obj.get(SolarFieldNames.DESCRIPTION).toString(), obj.get(SolarFieldNames.NAME).toString()));
         }
         System.out.println(productList);
-        p.setProducts(productList);
-        return p;
+        response.setProducts(productList);
+        return response;
 
     }
 }
