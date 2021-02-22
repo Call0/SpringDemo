@@ -1,6 +1,7 @@
 package com.example.springDemo.service.impl;
 
 import com.example.springDemo.client.SearchClient;
+import com.example.springDemo.constants.SolarFieldNames;
 import com.example.springDemo.dto.ProductResponseDTO;
 import com.example.springDemo.dto.SearchRequestDTO;
 import com.example.springDemo.dto.SearchResponseDTO;
@@ -29,13 +30,13 @@ public class SearchServiceImpl implements SearchService {
         boolean stock = false;
         double price = 0;
         for(HashMap<String, Object> i : list){
-            if((int) i.get("isInStock") > 0){
+            if((int) i.get(SolarFieldNames.IN_STOCK) > 0){
                 stock = true;
             } else{
                 stock = false;
             }
-            price = Double.parseDouble(i.get("offerPrice").toString());
-            productList.add(new ProductResponseDTO(stock, (int) price, i.get("description").toString(), i.get("name").toString()));
+            price = Double.parseDouble(i.get(SolarFieldNames.OFFER_PRICE).toString());
+            productList.add(new ProductResponseDTO(stock, (int) price, i.get(SolarFieldNames.DESCRIPTION).toString(), i.get(SolarFieldNames.NAME).toString()));
         }
         System.out.println(productList);
         p.setProducts(productList);
