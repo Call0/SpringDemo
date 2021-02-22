@@ -27,7 +27,7 @@ public class SearchServiceImpl implements SearchService {
         ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>)((HashMap<String, Object>)products.get("response")).get("docs");
         System.out.println(list.size());
         for(HashMap<String, Object> i : list){
-            productList.add(new ProductResponseDTO((int) i.get("isInStock"), Double.parseDouble(i.get("offerPrice").toString()), i.get("name").toString(), i.get("description").toString()));
+            productList.add(new ProductResponseDTO((int) i.get("isInStock"), Double.parseDouble(i.get("offerPrice").toString()), i.get("description").toString(), i.get("name").toString()));
         }
         System.out.println(productList);
         p.setProducts(productList);
