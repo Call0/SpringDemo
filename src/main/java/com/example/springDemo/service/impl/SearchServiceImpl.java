@@ -17,30 +17,42 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     private SearchClient searchClient;
 
-
     @Override
     public SearchResponseDTO productSearch(SearchRequestDTO request) {
 
-        Map<String, Object> products = searchClient.getProducts(request.getSearchTerm());
-        SearchResponseDTO response = new SearchResponseDTO();
-        List<ProductResponseDTO> productList = new ArrayList<>();
+        String locationSearch = "stockLocation:" + request.getLocation();
+        Map<String, Object> productsByLocation = searchClient.getProducts(locationSearch);
 
-        ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>)((HashMap<String, Object>)products.get("response")).get("docs");
-        System.out.println(list.size());
+        ArrayList<ProductResponseDTO> productList = (ArrayList<ProductResponseDTO>) getSearchtermBaseproducts(request.getSearchTerm());
+        ArrayList<ProductResponseDTO> productListByLoaction = (ArrayList<ProductResponseDTO>) getSearchtermBaseproducts(locationSearch);
+
+        SearchResponseDTO response = new SearchResponseDTO();
+        response.setProducts(productList);
+        response.setProductsByLocation(productListByLoaction);
+        return response;
+
+    }
+
+    public List<ProductResponseDTO> getSearchtermBaseproducts(String query){
+
         boolean stock;
         double price;
-        for(HashMap<String, Object> obj : list){
-            if((int) obj.get(SolarFieldNames.IN_STOCK) > 0){
+
+        Map<String, Object> products = searchClient.getProducts(query);
+        ArrayList<HashMap<String, Object>> locationList = (ArrayList<HashMap<String, Object>>)((HashMap<String, Object>)products.get("response")).get("docs");
+
+        List<ProductResponseDTO> productsList = new ArrayList<>();
+
+        for(HashMap<String, Object> obj : locationList){
+            if ((int) obj.get(SolarFieldNames.IN_STOCK) > 0) {
                 stock = true;
-            } else{
+            } else {
                 stock = false;
             }
             price = Double.parseDouble(obj.get(SolarFieldNames.OFFER_PRICE).toString());
-            productList.add(new ProductResponseDTO(stock, (int) price, obj.get(SolarFieldNames.DESCRIPTION).toString(), obj.get(SolarFieldNames.NAME).toString()));
-        }
-        System.out.println(productList);
-        response.setProducts(productList);
-        return response;
+            productsList.add(new ProductResponseDTO(stock, (int) price, obj.get(SolarFieldNames.DESCRIPTION).toString(), obj.get(SolarFieldNames.NAME).toString()));
 
+        }
+        return productsList;
     }
 }
