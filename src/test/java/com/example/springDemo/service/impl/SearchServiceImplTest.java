@@ -7,6 +7,7 @@ import com.example.springDemo.dto.SearchResponseDTO;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,28 @@ class SearchServiceImplTest {
         searchResponseDTO = searchService.productSearch(requestDTO);
         //System.out.println(searchResponseDTO.getProducts().get(0).getTitle());
         assertEquals(searchResponseDTO.getProducts().size(), 10);
+        assertEquals(searchResponseDTO.getProductsByLocation().size(), 10);
+
+        Mockito.verify(searchClient).getProducts("samsung");
+        Mockito.verify(searchClient).getProducts("stockLocation:jakarta");
+    }
+
+    @Test
+    public void testWithException() throws IOException {
+        SearchResponseDTO searchResponseDTO;
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> searchTermMockObject = objectMapper.readValue(new URL("file:src/test/resources/search.mock"), Map.class);
+
+        Mockito.when(searchClient.getProducts("samsung")).thenReturn(searchTermMockObject);
+        Mockito.when(searchClient.getProducts("stockLocation:jakarta")).thenThrow(NullPointerException.class);
+        SearchRequestDTO requestDTO = new SearchRequestDTO();
+        requestDTO.setSearchTerm("samsung");
+        requestDTO.setLocation("jakarta");
+        searchResponseDTO = searchService.productSearch(requestDTO);
+        //System.out.println(searchResponseDTO.getProducts().get(0).getTitle());
         assertEquals(searchResponseDTO.getProducts().size(), 10);
+        assertEquals(searchResponseDTO.getProductsByLocation(), null);
 
         Mockito.verify(searchClient).getProducts("samsung");
         Mockito.verify(searchClient).getProducts("stockLocation:jakarta");
